@@ -11,7 +11,6 @@ struct Person {
     age: usize,
 }
 
-// I AM NOT DONE
 
 // Steps:
 // 1. If the length of the provided string is 0, an error should be returned
@@ -23,9 +22,31 @@ struct Person {
 // 6. If while extracting the name and the age something goes wrong, an error should be returned
 // If everything goes well, then return a Result of a Person object
 
+
 impl FromStr for Person {
-    type Err = Box<dyn error::Error>;
+    type Err = Box<String>;
     fn from_str(s: &str) -> Result<Person, Self::Err> {
+        if s.len() == 0 {
+            return Err(Box::new("zero".into()));
+        }
+        let v: Vec<_> = s.split(",").collect();
+        if v.len() != 2 {
+            return Err(Box::new("not 2 elem".into()));
+        }
+        let name = String::from(v[0]);
+        if name.len() == 0 {
+            return Err(Box::new("missing name".into()));
+        }
+        let age_res = v[1].parse::<usize>();
+        if age_res.is_err() {
+            return Err(Box::new("age error".into()));
+        }
+        let age = age_res.unwrap();
+
+        Ok(Person{
+            name,
+            age
+        })
     }
 }
 
